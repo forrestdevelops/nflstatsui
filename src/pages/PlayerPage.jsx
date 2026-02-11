@@ -33,6 +33,8 @@ function GameLogTable({ games }) {
   const hasPassing = games.some(g => g.passing?.attempts > 0)
   const hasRushing = games.some(g => g.rushing?.attempts > 0)
   const hasReceiving = games.some(g => g.receiving?.receptions > 0)
+  const hasDefensive = games.some(g => g.defensive?.totalTackles > 0 || g.defensive?.sacks > 0)
+  const hasFumbles = games.some(g => g.fumbles?.fumbles > 0 || g.fumbles?.fumblesRecovered > 0)
 
   return (
     <div className="table-wrap">
@@ -46,6 +48,8 @@ function GameLogTable({ games }) {
             {hasPassing && <><th>Cmp/Att</th><th>Yds</th><th>TD</th><th>INT</th><th>Rtg</th></>}
             {hasRushing && <><th>Rush</th><th>Yds</th><th>TD</th></>}
             {hasReceiving && <><th>Rec</th><th>Yds</th><th>TD</th></>}
+            {hasDefensive && <><th>Tkl</th><th>Solo</th><th>Sck</th><th>TFL</th><th>PD</th><th>INT</th><th>FF</th></>}
+            {hasFumbles && <><th>Fum</th><th>Lost</th></>}
           </tr>
         </thead>
         <tbody>
@@ -76,6 +80,23 @@ function GameLogTable({ games }) {
                   <td>{g.receiving?.receptions}</td>
                   <td>{g.receiving?.yards}</td>
                   <td>{g.receiving?.touchdowns}</td>
+                </>
+              )}
+              {hasDefensive && (
+                <>
+                  <td>{g.defensive?.totalTackles}</td>
+                  <td>{g.defensive?.soloTackles}</td>
+                  <td>{g.defensive?.sacks}</td>
+                  <td>{g.defensive?.tacklesForLoss}</td>
+                  <td>{g.defensive?.passesDefended}</td>
+                  <td>{g.defensive?.interceptions}</td>
+                  <td>{g.defensive?.forcedFumbles}</td>
+                </>
+              )}
+              {hasFumbles && (
+                <>
+                  <td>{g.fumbles?.fumbles}</td>
+                  <td>{g.fumbles?.fumblesLost}</td>
                 </>
               )}
             </tr>
@@ -180,9 +201,8 @@ export default function PlayerPage() {
           <StatsCard title="Passing" stats={career.passing} />
           <StatsCard title="Rushing" stats={career.rushing} />
           <StatsCard title="Receiving" stats={career.receiving} />
-          {!career.passing && !career.rushing && !career.receiving && (
-            <p style={{ color: 'var(--text-muted)' }}>No career stats available.</p>
-          )}
+          <StatsCard title="Defensive" stats={career.defensive} />
+          <StatsCard title="Fumbles" stats={career.fumbles} />
         </div>
       )}
 
@@ -194,6 +214,8 @@ export default function PlayerPage() {
                 <StatsCard title="Passing" stats={seasonStats.passing} />
                 <StatsCard title="Rushing" stats={seasonStats.rushing} />
                 <StatsCard title="Receiving" stats={seasonStats.receiving} />
+                <StatsCard title="Defensive" stats={seasonStats.defensive} />
+                <StatsCard title="Fumbles" stats={seasonStats.fumbles} />
               </div>
             : <p style={{ color: 'var(--text-muted)' }}>Select a season to view stats.</p>
       )}
